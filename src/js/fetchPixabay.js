@@ -8,7 +8,8 @@ const params = new URLSearchParams({
   image_type: 'photo',
   orientation: 'horizontal',
   safesearch: true,
-  per_page: 40,
+  //   per_page: 40,
+  per_page: 20,
 });
 
 export async function fetchPixabay(search, page) {
