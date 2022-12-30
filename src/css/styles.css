@@ -7,6 +7,7 @@ body {
     Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
   background-color: #fafafa;
   color: #212121;
   line-height: 1.5;
@@ -19,16 +20,43 @@ h1 {
 
 .search-form {
   padding-block: 8px;
-  /* margin-bottom: 16px; */
   margin-inline: auto;
   text-align: center;
 
-  font: inherit;
+  background-color: rgb(0, 236, 236);
+}
 
-  background-color: aqua;
+.search-form input,
+.search-form button {
+  font-size: 18px;
 }
 
 .gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
   padding: 16px 30px;
+  justify-content: center;
+}
+
+.photo-card {
   outline: auto;
+  padding: 5px;
+  border-radius: 5px;
+  background-color: rgb(248, 248, 242);
+}
+.card-image {
+  width: 300px;
+  height: 160px;
+  object-fit: cover;
+}
+.info {
+  display: flex;
+  justify-content: space-around;
+}
+.info-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-block: 8px;
 }
