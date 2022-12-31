@@ -8,12 +8,13 @@ const params = new URLSearchParams({
   image_type: 'photo',
   orientation: 'horizontal',
   safesearch: true,
-  //   per_page: 40,
-  per_page: 20,
 });
 
-export async function fetchPixabay(search, page) {
-  return await axios.get(`${BASE_URL}?q=${search}&page=${page}`, { params });
+export async function fetchPixabay(search, page, perPage) {
+  return await axios.get(
+    `${BASE_URL}?q=${search}&page=${page}&per_page=${perPage}`,
+    { params }
+  );
 }
 
 // ========================================================================

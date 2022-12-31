@@ -1,10 +1,30 @@
 import { fetchPixabay } from './js/fetchPixabay';
 
-const form = document.querySelector('#search-form');
 const gallery = document.querySelector('.gallery');
+const form = document.querySelector('#search-form');
+const buttonSubmit = document.querySelector(
+  '#search-form button[type="submit"]'
+);
+const buttonLoad = document.querySelector('.load-more');
 form.addEventListener('submit', onSearch);
+buttonLoad.addEventListener('click', onLoad);
 
 let page = 1;
+let query = '';
+let pages = 0;
+const perPage = 20;
+
+// fetch
+async function getData(query, page) {
+  try {
+    const responce = await fetchPixabay(query, page);
+    // console.log('responce :>> ', responce.data.total);
+    pages = Math.ceil(responce.data.total / perPage);
+    return responce.data.hits;
+  } catch (error) {
+    console.log('error :>> ', error.message);
+  }
+}
 
 // submit
 async function onSearch(event) {
@@ -13,19 +33,28 @@ async function onSearch(event) {
   //     elements: { searchQuery },
   //   } = event.currentTarget;
   //   const search = searchQuery.value;
-  const search = event.currentTarget.elements.searchQuery.value;
-  const res = await getData(search, page);
-  createMarkup(res);
+  const newQuery = event.currentTarget.elements.searchQuery.value.trim();
+  if (query !== newQuery) {
+    query = newQuery;
+    page = 1;
+    buttonLoad.disabled = false;
+    onClean();
+  }
+  await onLoad();
 }
 
-// fetch
-async function getData(search, page) {
-  try {
-    const responce = await fetchPixabay(search, page);
-    return responce.data.hits;
-  } catch (error) {
-    console.log('error :>> ', error.message);
+async function onLoad() {
+  const res = await getData(query, page, perPage);
+  createMarkup(res);
+  if (pages === page) {
+    console.log('pages === page');
+    buttonLoad.disabled = true;
   }
+  page += 1;
+}
+
+function onClean() {
+  gallery.innerHTML = '';
 }
 
 function createMarkup(res) {
