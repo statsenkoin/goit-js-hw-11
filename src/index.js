@@ -9,6 +9,8 @@ const buttonLoad = document.querySelector('.load-more');
 form.addEventListener('submit', onSearch);
 buttonLoad.addEventListener('click', onLoad);
 
+buttonLoad.hidden = true;
+
 let page = 1;
 let query = '';
 let pages = 0;
@@ -34,27 +36,48 @@ async function onSearch(event) {
   //   } = event.currentTarget;
   //   const search = searchQuery.value;
   const newQuery = event.currentTarget.elements.searchQuery.value.trim();
+
   if (query !== newQuery) {
-    query = newQuery;
     page = 1;
-    buttonLoad.disabled = false;
-    onClean();
+    onCleanGallery();
   }
-  await onLoad();
+  query = newQuery;
+  console.log(`newQuery :>> "${newQuery}"`);
+  console.log(`query :>> "${query}"`);
+  if (query) {
+    console.log(`if query :>> "${query}"`);
+
+    await onLoad();
+  } else {
+    console.log(`else query :>> "${query}"`);
+    console.log(
+      'Sorry, there are no images matching your search query. Please try again.'
+    );
+
+    onPageReset();
+  }
 }
 
 async function onLoad() {
   const res = await getData(query, page, perPage);
   createMarkup(res);
-  if (pages === page) {
-    console.log('pages === page');
-    buttonLoad.disabled = true;
-  }
-  page += 1;
+  buttonLoad.hidden = false;
+  pages === page ? (buttonLoad.hidden = true) : (page += 1);
+  // if (pages === page) {
+  //   console.log('pages === page');
+  //   buttonLoad.hidden = true;
+  // }
+  // page += 1;
 }
 
-function onClean() {
+function onCleanGallery() {
   gallery.innerHTML = '';
+}
+
+function onPageReset() {
+  form.reset();
+  onCleanGallery();
+  buttonLoad.hidden = true;
 }
 
 function createMarkup(res) {
