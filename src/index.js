@@ -61,7 +61,7 @@ async function onLoadGallery() {
 
 function showResourseInfoMessage(searchResult) {
   const totalHits = searchResult.totalHits;
-  if (page === 1) {
+  if (page === 1 && searchResult.hits.length) {
     Notify.success(`Hooray! We found ${totalHits} images.`);
   }
   if (!searchResult.hits.length) {
