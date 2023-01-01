@@ -1,13 +1,11 @@
+import { Notify } from 'notiflix';
 import { fetchPixabay } from './js/fetchPixabay';
 
 const gallery = document.querySelector('.gallery');
 const form = document.querySelector('#search-form');
-const buttonSubmit = document.querySelector(
-  '#search-form button[type="submit"]'
-);
 const buttonLoad = document.querySelector('.load-more');
 form.addEventListener('submit', onSearch);
-buttonLoad.addEventListener('click', onLoad);
+buttonLoad.addEventListener('click', onLoadGallery);
 
 buttonLoad.hidden = true;
 
@@ -17,12 +15,13 @@ let pages = 0;
 const perPage = 20;
 
 // fetch
-async function getData(query, page) {
+async function getData(query, page, perPage) {
   try {
-    const responce = await fetchPixabay(query, page);
-    // console.log('responce :>> ', responce.data.total);
+    const responce = await fetchPixabay(query, page, perPage);
     pages = Math.ceil(responce.data.total / perPage);
-    return responce.data.hits;
+    const searchResult = responce.data;
+    showResourseInfoMessage(searchResult);
+    return searchResult.hits;
   } catch (error) {
     console.log('error :>> ', error.message);
   }
@@ -31,6 +30,7 @@ async function getData(query, page) {
 // submit
 async function onSearch(event) {
   event.preventDefault();
+
   //   const {
   //     elements: { searchQuery },
   //   } = event.currentTarget;
@@ -42,46 +42,49 @@ async function onSearch(event) {
     onCleanGallery();
   }
   query = newQuery;
-  console.log(`newQuery :>> "${newQuery}"`);
-  console.log(`query :>> "${query}"`);
   if (query) {
-    console.log(`if query :>> "${query}"`);
-
-    await onLoad();
+    await onLoadGallery();
   } else {
-    console.log(`else query :>> "${query}"`);
-    console.log(
-      'Sorry, there are no images matching your search query. Please try again.'
-    );
-
     onPageReset();
   }
 }
 
-async function onLoad() {
+async function onLoadGallery() {
   const res = await getData(query, page, perPage);
+  buttonLoad.hidden = true;
   createMarkup(res);
-  buttonLoad.hidden = false;
-  pages === page ? (buttonLoad.hidden = true) : (page += 1);
-  // if (pages === page) {
-  //   console.log('pages === page');
-  //   buttonLoad.hidden = true;
-  // }
-  // page += 1;
+  if (pages > page) {
+    page += 1;
+    buttonLoad.hidden = false;
+  }
+}
+
+function showResourseInfoMessage(searchResult) {
+  const totalHits = searchResult.totalHits;
+  if (page === 1) {
+    Notify.success(`Hooray! We found ${totalHits} images.`);
+  }
+  if (!searchResult.hits.length) {
+    Notify.failure(
+      'Sorry, there are no images matching your search query. Please try again.'
+    );
+  }
+  if (pages === page) {
+    Notify.info("We're sorry, but you've reached the end of search results.");
+  }
 }
 
 function onCleanGallery() {
   gallery.innerHTML = '';
+  buttonLoad.hidden = true;
 }
 
 function onPageReset() {
   form.reset();
   onCleanGallery();
-  buttonLoad.hidden = true;
 }
 
 function createMarkup(res) {
-  console.log('res :>> ', res);
   const {
     webformatURL,
     largeImageURL,
