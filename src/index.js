@@ -10,22 +10,9 @@ buttonLoad.addEventListener('click', onLoadGallery);
 buttonLoad.hidden = true;
 
 let page = 1;
-let query = '';
-let pages = 0;
+let userInput = '';
+let pages = 1;
 const perPage = 20;
-
-// fetch
-async function getData(query, page, perPage) {
-  try {
-    const responce = await fetchPixabay(query, page, perPage);
-    pages = Math.ceil(responce.data.total / perPage);
-    const searchResult = responce.data;
-    showResourseInfoMessage(searchResult);
-    return searchResult.hits;
-  } catch (error) {
-    console.log('error :>> ', error.message);
-  }
-}
 
 // submit
 async function onSearch(event) {
@@ -34,28 +21,41 @@ async function onSearch(event) {
   //   const {
   //     elements: { searchQuery },
   //   } = event.currentTarget;
-  //   const search = searchQuery.value;
-  const newQuery = event.currentTarget.elements.searchQuery.value.trim();
+  //   const newUserInput = searchQuery.value;
+  const newUserInput = event.currentTarget.elements.searchQuery.value.trim();
 
-  if (query !== newQuery) {
-    page = 1;
+  if (userInput !== newUserInput) {
+    userInput = newUserInput;
+    pages = 1;
     onCleanGallery();
   }
-  query = newQuery;
-  if (query) {
-    await onLoadGallery();
-  } else {
-    onPageReset();
-  }
+  if (userInput && pages >= page) await onLoadGallery();
+}
+
+function onCleanGallery() {
+  gallery.innerHTML = '';
+  buttonLoad.hidden = true;
+  page = 1;
 }
 
 async function onLoadGallery() {
-  const res = await getData(query, page, perPage);
+  const res = await getData(userInput, page, perPage);
   buttonLoad.hidden = true;
   createMarkup(res);
-  if (pages > page) {
-    page += 1;
-    buttonLoad.hidden = false;
+  if (pages > page) buttonLoad.hidden = false;
+  page += 1;
+}
+
+// fetch
+async function getData(userInput, page, perPage) {
+  try {
+    const responce = await fetchPixabay(userInput, page, perPage);
+    pages = Math.ceil(responce.data.total / perPage);
+    const searchResult = responce.data;
+    showResourseInfoMessage(searchResult);
+    return searchResult.hits;
+  } catch (error) {
+    console.log('error :>> ', error.message);
   }
 }
 
@@ -72,16 +72,6 @@ function showResourseInfoMessage(searchResult) {
   if (pages === page) {
     Notify.info("We're sorry, but you've reached the end of search results.");
   }
-}
-
-function onCleanGallery() {
-  gallery.innerHTML = '';
-  buttonLoad.hidden = true;
-}
-
-function onPageReset() {
-  form.reset();
-  onCleanGallery();
 }
 
 function createMarkup(res) {
