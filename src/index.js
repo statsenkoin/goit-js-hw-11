@@ -1,6 +1,11 @@
 import { Notify } from 'notiflix';
 import { fetchPixabay } from './js/fetchPixabay';
 
+// Описаний в документації
+import SimpleLightbox from 'simplelightbox';
+// Додатковий імпорт стилів
+import 'simplelightbox/dist/simple-lightbox.min.css';
+
 const gallery = document.querySelector('.gallery');
 const form = document.querySelector('#search-form');
 const buttonLoad = document.querySelector('.load-more');
@@ -8,6 +13,12 @@ form.addEventListener('submit', onSearch);
 buttonLoad.addEventListener('click', onLoadGallery);
 
 buttonLoad.hidden = true;
+
+const simpleLightbox = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionDelay: 250,
+  close: true,
+});
 
 let page = 1;
 let userInput = '';
@@ -42,6 +53,7 @@ async function onLoadGallery() {
   const res = await getData(userInput, page, perPage);
   buttonLoad.hidden = true;
   createMarkup(res);
+  simpleLightbox.refresh();
   if (pages > page) buttonLoad.hidden = false;
   page += 1;
 }
@@ -75,38 +87,41 @@ function showResourseInfoMessage(searchResult) {
 }
 
 function createMarkup(res) {
-  const {
-    webformatURL,
-    largeImageURL,
-    tags,
-    likes,
-    views,
-    comments,
-    downloads,
-  } = res;
-  const markup = res.reduce((acc, item) => {
-    return (acc += `
-    <div class="photo-card">
-      <img class="card-image" src="${item.webformatURL}" alt="${item.tags}" loading="lazy" />
+  const markup = res.reduce(
+    (
+      acc,
+      { webformatURL, largeImageURL, tags, likes, views, comments, downloads }
+    ) => {
+      return (acc += `<div class="photo-card">
+      <a href="${largeImageURL}">
+        <img 
+          class="card-image" 
+          src="${webformatURL}" 
+          alt="${tags}" 
+          loading="lazy"
+        />
+      </a>
       <div class="info">
         <p class="info-item">
           <b>Likes</b>
-          ${item.likes}
+          ${likes}
         </p>
         <p class="info-item">
           <b>Views</b>
-          ${item.views}
+          ${views}
         </p>
         <p class="info-item">
           <b>Comments</b>
-          ${item.comments}
+          ${comments}
         </p>
         <p class="info-item">
           <b>Downloads</b>
-          ${item.downloads}
+          ${downloads}
         </p>
       </div>
     </div>`);
-  }, '');
+    },
+    ''
+  );
   gallery.insertAdjacentHTML('beforeend', markup);
 }
