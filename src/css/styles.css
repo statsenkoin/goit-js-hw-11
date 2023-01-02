@@ -22,7 +22,6 @@ h1 {
 
 .search-form {
   padding-block: 8px;
-
   background-color: rgb(0, 236, 236);
 }
 
@@ -67,5 +66,6 @@ h1 {
 .load-more {
   padding-inline: 50px;
   font-size: 18px;
-  background-color: burlywood;
+  /* background-color: rgb(248, 248, 242); */
+  background-color: rgb(0, 236, 236);
 }
