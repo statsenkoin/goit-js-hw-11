@@ -2,6 +2,7 @@ import { fetchPixabay } from './js/fetch_pixabay';
 import { showMessage } from './js/notify_message';
 import { createMarkup } from './js/markup';
 import { simpleLightbox } from './js/simple_lightbox';
+import { scrollGallery } from './js/scroll_gallery';
 
 let page = 1;
 let userInput = '';
@@ -45,6 +46,7 @@ async function onLoadGallery() {
   buttonLoad.hidden = true;
   createMarkup(res, gallery);
   simpleLightbox.refresh();
+  if (page > 1) scrollGallery(gallery);
   if (pages > page) buttonLoad.hidden = false;
   page += 1;
 }
