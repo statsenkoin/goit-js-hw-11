@@ -3,6 +3,7 @@ import { showMessage } from './js/notify_message';
 import { createMarkup } from './js/markup';
 import { simpleLightbox } from './js/simple_lightbox';
 import { scrollGallery } from './js/scroll_gallery';
+import './js/scrollup-button';
 
 let userInput = '';
 let page = 1;
