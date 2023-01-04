@@ -83,7 +83,7 @@ async function getData() {
 
 function handleIntersect(entries, observer) {
   entries.forEach(async entry => {
-    if (entry.isIntersecting) await onLoadGallery();
+    if (entry.isIntersecting && userInput) await onLoadGallery();
     if (pages < page) {
       observer.unobserve(observerTarget);
     }
