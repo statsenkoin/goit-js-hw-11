@@ -7,25 +7,23 @@ import { scrollGallery } from './js/scroll_gallery';
 let userInput = '';
 let page = 1;
 let pages = 1;
-const perPage = 40;
-
+const perPage = 20;
+let isInfinityLoad;
 let observerOptions = {
   root: null,
   rootMargin: '500px',
   threshold: 1.0,
 };
 
-// ==========================================================
-const isInfiniteScroll = true;
-// ==========================================================
-
-const gallery = document.querySelector('.gallery');
+const gallery = document.querySelector('.js-gallery');
 const form = document.querySelector('#search-form');
-const buttonLoad = document.querySelector('.load-more');
-const observerTarget = document.querySelector('.observer-target');
+const buttonLoad = document.querySelector('.js-load-more');
+const observerTarget = document.querySelector('.js-observer-target');
+const checkbox = document.querySelector('.js-checkbox');
 
 form.addEventListener('submit', onSearch);
 buttonLoad.addEventListener('click', onLoadGallery);
+checkbox.addEventListener('change', setInfinityLoad);
 
 let observer = new IntersectionObserver(handleIntersect, observerOptions);
 
@@ -45,7 +43,7 @@ async function onSearch(event) {
     observer.unobserve(observerTarget);
   }
   if (userInput && pages >= page) {
-    isInfiniteScroll ? observer.observe(observerTarget) : await onLoadGallery();
+    isInfinityLoad ? observer.observe(observerTarget) : await onLoadGallery();
   }
 }
 
@@ -66,8 +64,8 @@ async function onLoadGallery() {
     observerTarget.textContent =
       "We're sorry, but you've reached the end of search results.";
   }
-  if (page > 1 && !isInfiniteScroll) scrollGallery(gallery);
-  if (pages > page && !isInfiniteScroll) buttonLoad.hidden = false;
+  if (page > 1 && !isInfinityLoad) scrollGallery(gallery);
+  if (pages > page && !isInfinityLoad) buttonLoad.hidden = false;
   page += 1;
 }
 
@@ -84,10 +82,18 @@ async function getData() {
 }
 
 function handleIntersect(entries, observer) {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) onLoadGallery();
+  entries.forEach(async entry => {
+    if (entry.isIntersecting) await onLoadGallery();
     if (pages < page) {
       observer.unobserve(observerTarget);
     }
   });
+}
+
+function setInfinityLoad(event) {
+  isInfinityLoad = event.currentTarget.checked;
+  isInfinityLoad
+    ? observer.observe(observerTarget)
+    : observer.unobserve(observerTarget);
+  if (pages > page && !isInfinityLoad) buttonLoad.hidden = false;
 }
