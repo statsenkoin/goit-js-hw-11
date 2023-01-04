@@ -7,7 +7,7 @@ import { scrollGallery } from './js/scroll_gallery';
 let userInput = '';
 let page = 1;
 let pages = 1;
-const perPage = 20;
+const perPage = 40;
 let isInfinityLoad;
 let observerOptions = {
   root: null,
